@@ -38,7 +38,7 @@ class BotResponseReceived implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel("user.{$this->user->id}.chat.{$this->chatId}")
+            new Channel("user.{$this->user->id}.chat.{$this->chatId}")
         ];
     }
 

@@ -39,19 +39,6 @@ return [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
             ],
-            'client_options' => [
-                // Opciones para Guzzle (si se necesitan)
-            ],
-        ],
-
-        'ably' => [
-            'driver' => 'ably',
-            'key' => env('ABLY_KEY'),
-        ],
-
-        'redis' => [
-            'driver' => 'redis',
-            'connection' => 'default',
         ],
 
         'log' => [
