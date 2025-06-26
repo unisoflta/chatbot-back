@@ -186,6 +186,11 @@ If GPT determines it needs external data, it responds with:
 ```
 🔍 REQUIERE_API: ciudad=[Madrid], fecha=[mañana]
 ```
+The brackets around the values are recommended but optional. The system will
+also accept responses like:
+```
+🔍 REQUIERE_API: ciudad=Madrid, fecha=hoy
+```
 
 The system then:
 1. Extracts city and date requirements
