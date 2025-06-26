@@ -1,0 +1,54 @@
+language: php
+project_type: api_only
+framework: laravel
+architecture: domain_driven_design
+
+naming_conventions:
+  variables: snake_case
+  methods: camelCase
+  classes: PascalCase
+  interfaces: PascalCase
+  files: snake_case
+
+directory_structure:
+  root:
+    - app/
+      - Repositories/
+        - Interfaces/
+        - BaseRepository.php
+    - domains/
+    - routes/
+    - tests/
+  domains:
+    - <module_name>/
+      - DTOs/
+      - Models/
+      - Repositories/
+      - Services/
+
+dependencies:
+  repositories:
+    use_interface_pattern: true
+    base_repository: BaseRepository
+    interface_folder: app/Repositories/Interfaces
+    concrete_folder: app/Domains/<module_name>/Repositories/
+
+api_response_wrapper:
+  enabled: true
+  class_name: ApiResponse
+  location: app/Helpers/ApiResponse.php
+
+testing:
+  auto_generate_on_edit: true
+  framework: phpunit
+  test_directory: tests/Feature/
+  test_naming: <ClassName>Test.php
+
+recommendations:
+  - Use FormRequest classes for validation
+  - All business logic must be inside Services
+  - Repositories must implement Interfaces explicitly
+  - DTOs should be immutable and located in each domain module
+  - Controllers should only handle HTTP input/output
+  - All responses must use the ApiResponse helper
+  - Handle exceptions globally using Laravel’s exception handler
