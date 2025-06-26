@@ -74,19 +74,22 @@ class AuthController extends Controller
                 return ApiResponse::error('Account is not active', 403);
             }
 
+
             $user->tokens()->delete();
 
-            $token = $user->createToken('personal', ['*'],now()->addDay());
+            $tokenResult = $user->createToken('personal');
+            $tokenResult->token->expires_at = now()->addDay();
+            $tokenResult->token->save();
 
-            Log::info($token);
+            Log::info($tokenResult);
 
             $userDTO = UserDTO::fromModel($user);
 
             return ApiResponse::success([
                 'user' => $userDTO->toArray(),
-                'token' => $token->plainTextToken,
+                'token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer',
-                'expires_at' => $token->accessToken->expires_at->toISOString(),
+                'expires_at' => $tokenResult->token->expires_at->toISOString(),
             ], 'Login successful');
 
         } catch (ValidationException $e) {
@@ -157,7 +160,7 @@ class AuthController extends Controller
                 return ApiResponse::unauthorized('User not authenticated');
             }
 
-            $request->user()->currentAccessToken()->delete();
+            $request->user()->token()->revoke();
 
             return ApiResponse::success(null, 'Logged out successfully');
 
@@ -195,20 +198,20 @@ class AuthController extends Controller
                 return ApiResponse::unauthorized('User not authenticated');
             }
 
-            $currentToken = $request->user()->currentAccessToken();
+            $currentToken = $request->user()->token();
 
-            $newToken = $user->createToken(
-                $currentToken->name,
-                $currentToken->abilities,
-                now()->addDay()
+            $newTokenResult = $user->createToken(
+                $currentToken->name ?? 'personal'
             );
+            $newTokenResult->token->expires_at = now()->addDay();
+            $newTokenResult->token->save();
 
-            $currentToken->delete();
+            $currentToken->revoke();
 
             return ApiResponse::success([
-                'token' => $newToken->plainTextToken,
+                'token' => $newTokenResult->accessToken,
                 'token_type' => 'Bearer',
-                'expires_at' => $newToken->accessToken->expires_at->toISOString(),
+                'expires_at' => $newTokenResult->token->expires_at->toISOString(),
             ], 'Token refreshed successfully');
 
         } catch (Exception $e) {
@@ -288,7 +291,7 @@ class AuthController extends Controller
                 return ApiResponse::notFound('Token not found');
             }
 
-            $token->delete();
+            $token->revoke();
 
             return ApiResponse::success(null, 'Token revoked successfully');
 
