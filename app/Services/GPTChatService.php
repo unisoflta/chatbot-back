@@ -242,7 +242,8 @@ class GPTChatService
         Log::info('🔍 Extracting API requirements from GPT response');
         
         // Extract city and date from the format: 🔍 REQUIERE_API: ciudad=[...], fecha=[...]
-        if (!preg_match('/🔍 REQUIERE_API: ciudad=\[([^\]]+)\], fecha=\[([^\]]+)\]/', $response, $matches)) {
+        // The brackets are optional to make the parser more tolerant
+        if (!preg_match('/🔍\s*REQUIERE_API:\s*ciudad=\[?([^\],]+)\]?,\s*fecha=\[?([^\]\.,]+)\]?/i', $response, $matches)) {
             Log::error('❌ Invalid API requirement format in GPT response', [
                 'response_preview' => substr($response, 0, 200),
                 'pattern_not_found' => true

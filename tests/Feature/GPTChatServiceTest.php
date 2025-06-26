@@ -272,4 +272,19 @@ class GPTChatServiceTest extends TestCase
             'date' => 'mañana'
         ], $result);
     }
-} 
+
+    public function test_extract_api_requirements_without_brackets()
+    {
+        $reflection = new \ReflectionClass($this->gptChatService);
+        $method = $reflection->getMethod('extractApiRequirements');
+        $method->setAccessible(true);
+
+        $response = "🔍 REQUIERE_API: ciudad=Madrid, fecha=hoy.";
+        $result = $method->invoke($this->gptChatService, $response);
+
+        $this->assertEquals([
+            'city' => 'Madrid',
+            'date' => 'hoy'
+        ], $result);
+    }
+}
